@@ -1,22 +1,38 @@
-#ifndef MAIN_H
-#define MAIN_H
+#ifndef _PROS_MAIN_H_
+#define _PROS_MAIN_H_
+#define PROS_USE_SIMPLE_NAMES
+#define PROS_USE_LITERALS
 
-#include "vex.h"
 
-extern vex::motor leftMotor1;
-extern vex::motor leftMotor2;
-extern vex::motor leftMotor3;
-extern vex::motor rightMotor1;
-extern vex::motor rightMotor2;
-extern vex::motor rightMotor3;
+#include "api.h"
 
-extern vex::motor intakeMotor;
+extern pros::Controller master;
 
-extern vex::motor cataMotor;
+extern pros::Motor left_mtr1;
+extern pros::Motor left_mtr2;
+extern pros::Motor left_mtr3;
+extern pros::Motor right_mtr1;
+extern pros::Motor right_mtr2;
+extern pros::Motor right_mtr3;
 
-extern vex::controller Controller1;
+extern pros::Motor intake_mtr;
 
-void userControl(void);
-void autonomous(void);
+extern pros::Motor cata_mtr;
 
+extern pros::ADIDigitalOut wings;
+
+#ifdef __cplusplus
+extern "C" {
 #endif
+
+void initialize();
+void disabled();
+void competition_initialize();
+void autonomous();
+void opcontrol();
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif  

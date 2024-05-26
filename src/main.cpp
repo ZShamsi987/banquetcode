@@ -1,60 +1,73 @@
 #include "main.h"
 
-vex::motor leftMotor1(vex::PORT10, vex::gearSetting::ratio18_1, false);
-vex::motor leftMotor2(vex::PORT9, vex::gearSetting::ratio18_1, false);
-vex::motor leftMotor3(vex::PORT8, vex::gearSetting::ratio18_1, false);
-vex::motor rightMotor1(vex::PORT1, vex::gearSetting::ratio18_1, true);
-vex::motor rightMotor2(vex::PORT2, vex::gearSetting::ratio18_1, true);
-vex::motor rightMotor3(vex::PORT3, vex::gearSetting::ratio18_1, true);
+pros::Controller master(pros::E_CONTROLLER_MASTER);
 
-vex::motor intakeMotor(vex::PORT11, vex::gearSetting::ratio18_1, false);
-vex::motor cataMotor(vex::PORT6, vex::gearSetting::ratio36_1, false);
+pros::Motor left_mtr1(10, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor left_mtr2(9, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor left_mtr3(8, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor right_mtr1(1, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor right_mtr2(2, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor right_mtr3(3, pros::E_MOTOR_GEARSET_18, true, pros::E_MOTOR_ENCODER_DEGREES);
 
-vex::controller Controller1;
+pros::Motor intake_mtr(11, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_DEGREES);
 
-void userControl(void) {
-    while (true) {
-        int forward = Controller1.Axis2.position();
-        int turn = Controller1.Axis4.position();
-        
-        leftMotor1.spin(vex::directionType::fwd, forward + turn, vex::velocityUnits::pct);
-        leftMotor2.spin(vex::directionType::fwd, forward + turn, vex::velocityUnits::pct);
-        leftMotor3.spin(vex::directionType::fwd, forward + turn, vex::velocityUnits::pct);
-        
-        rightMotor1.spin(vex::directionType::fwd, forward - turn, vex::velocityUnits::pct);
-        rightMotor2.spin(vex::directionType::fwd, forward - turn, vex::velocityUnits::pct);
-        rightMotor3.spin(vex::directionType::fwd, forward - turn, vex::velocityUnits::pct);
-        
-        if (Controller1.ButtonL1.pressing()) {
-            intakeMotor.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
-        } else if (Controller1.ButtonL2.pressing()) {
-            intakeMotor.spin(vex::directionType::rev, 100, vex::velocityUnits::pct);
-        } else {
-            intakeMotor.stop();
-        }
+pros::Motor cata_mtr(6, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_DEGREES);
 
-        if (Controller1.ButtonA.pressing()) {
-            cataMotor.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
-        } else {
-            cataMotor.stop();
-        }
-        
-        vex::task::sleep(20);
-    }
+pros::ADIDigitalOut wings('A');
+
+void initialize() {
+    // blank
 }
 
-//(to be defined)
-void autonomous(void) {
-    // Placeholder 
+void disabled() {
+    // blank
 }
 
-int main() {
-    vexcodeInit();
+void competition_initialize() {
+    // blank
+}
 
-    Competition.autonomous(autonomous);
-    Competition.drivercontrol(userControl);
-    
+void autonomous() {
+    // blank
+}
+
+void opcontrol() {
     while (true) {
-        vex::task::sleep(100);
+        int forward = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
+        int turn = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+
+		//drive
+        int left_power = forward + turn;
+        int right_power = forward - turn;
+
+        left_mtr1.move(left_power);
+        left_mtr2.move(left_power);
+        left_mtr3.move(left_power);
+        right_mtr1.move(right_power);
+        right_mtr2.move(right_power);
+        right_mtr3.move(right_power);
+
+		//intake
+        if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
+            intake_mtr.move(127);
+        } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+            intake_mtr.move(-127);
+        } else {
+            intake_mtr.move(0);
+        }
+
+        // Cata
+        if (master.get_digital(pros::E_CONTROLLER_DIGITAL_A)) {
+            cata_mtr.move(127);
+        } else {
+            cata_mtr.move(0);
+        }
+
+        // Wings
+        if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
+            wings.set_value(!wings.get_value());
+        }
+
+        pros::delay(20);
     }
 }
