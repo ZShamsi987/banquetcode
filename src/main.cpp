@@ -33,6 +33,7 @@ void autonomous() {
 
 void opcontrol() {
     bool cataOn = false;
+	bool PistonOn=false;
 
     while (true) {
         int forward = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
@@ -58,7 +59,7 @@ void opcontrol() {
         }
 
         // Cata
-        if (master.get_digital(pros::E_CONTROLLER_DIGITAL_A)) {
+        if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
             cataOn = !cataOn;
 
         }
@@ -72,8 +73,11 @@ void opcontrol() {
 
         // Wings
         if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
-            wings.set_value(!wings.get_value());
+            PistonOn = !PistonOn;
         }
+
+		wings.set_value(PistonOn);
+		
 
         pros::delay(20);
     }
