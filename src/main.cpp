@@ -31,11 +31,23 @@ void competition_initialize() {
 }
 
 void autonomous() {
-    left.move_velocity(200);
-	right.move_velocity(200);
-	pros::delay(1000);
-	left.move_velocity(0);
+	right.move_velocity(300);
+	left.move_velocity(300);
+	pros::delay(4000);
 	right.move_velocity(0);
+	left.move_velocity(0);
+	pros::delay(200);
+	left.move_velocity(300);
+	pros::delay(1000);
+	right.move_velocity(300);
+	left.move_velocity(300);
+	intake_mtr.move_velocity(-200);
+	pros::delay(750);
+	right.move_velocity(0);
+	left.move_velocity(0);
+	intake_mtr.move_velocity(0);
+	pros::delay(250);	
+
 }
 
 void opcontrol() {
@@ -58,12 +70,8 @@ void opcontrol() {
 		int left_power = power + turn;
 		int right_power = power - turn;
 
-        left_mtr1.move(left_power);
-        left_mtr2.move(left_power);
-        left_mtr3.move(left_power);
-        right_mtr1.move(right_power);
-        right_mtr2.move(right_power);
-        right_mtr3.move(right_power);
+        left.move(left_power);
+        right.move(right_power);
 
 		//intake
         if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
