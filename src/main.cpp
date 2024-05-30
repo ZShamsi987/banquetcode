@@ -13,6 +13,9 @@ pros::Motor intake_mtr(10, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODE
 
 pros::Motor cata_mtr(6, pros::E_MOTOR_GEARSET_36, false, pros::E_MOTOR_ENCODER_DEGREES);
 
+pros::Motor_Group left({left_mtr1, left_mtr2, left_mtr3});
+pros::Motor_Group right({right_mtr1, right_mtr2, right_mtr3});
+
 pros::ADIDigitalOut wings('A');
 
 void initialize() {
@@ -28,7 +31,11 @@ void competition_initialize() {
 }
 
 void autonomous() {
-    // blank
+    left.move_velocity(200);
+	right.move_velocity(200);
+	pros::delay(1000);
+	left.move_velocity(0);
+	right.move_velocity(0);
 }
 
 void opcontrol() {
@@ -36,11 +43,20 @@ void opcontrol() {
 	bool PistonOn=false;
 
     while (true) {
-        int forward = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
-        int turn = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+		int power = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
+		int turn = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+        // // Get analog stick values
+        // int forward_left = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+        // int forward_right = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
+        // int turn_left = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X);
+        // int turn_right = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
 
-        int left_power = forward + turn;
-        int right_power = forward - turn;
+        // // Calculate the average forward and turn values
+        // int forward = (forward_left + forward_right) / 2;
+        // int turn = (turn_left + turn_right) / 2;
+
+		int left_power = power + turn;
+		int right_power = power - turn;
 
         left_mtr1.move(left_power);
         left_mtr2.move(left_power);
